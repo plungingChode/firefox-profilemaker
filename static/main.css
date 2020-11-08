@@ -277,7 +277,7 @@ form label {
   color: var(--neutral-dark);
 }
 
-form > p {
+form > div {
   margin: 0 0 .6em 0;
 }
 
@@ -287,6 +287,49 @@ form > p {
   background-color: var(--info-light);
   border: 1px solid var(--info-main);
   border-radius: 5px;
+}
+
+.info.inline {
+  display: inline;
+  padding: 0 .5em 2px .5em;
+  border-radius: 3px;
+}
+
+.info.block {
+  border: none;
+  background: none;
+  padding: 0;
+  margin-top: .5em;
+
+  color: var(--info-main);
+
+  display: inline-block;
+  font-size: 90%;
+  border-radius: 3px;
+}
+
+.info.block h5 {
+  font-size: inherit;
+  margin: 0;
+}
+
+.info.block .desc {
+  margin-bottom: .5em;
+}
+
+.info.block ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.info.block ul > li {
+  margin-left: .8em;
+}
+
+.info.block ul > li::before {
+  content: "- ";
+  font-weight: bold;
 }
 
 .tight {
