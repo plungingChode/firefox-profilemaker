@@ -32,63 +32,6 @@ window.addEventListener("load", showCurrentForm);
 window.addEventListener("hashchange", showCurrentForm);
 links.forEach(l => l.addEventListener("click", showCurrentForm));
 
-// Slightly faster alternative
-/* links.forEach(l => {
-    const href = l.href;
-    const formName = href.substr(href.indexOf("#") + 1);
-
-    const link = l.parentElement;
-    const form = document.getElementById(formName);
-
-    l.addEventListener("click", () => setActive(link, form));
-}); */
-
-const lightColors = {
-    "--primary-main": "#00458B",
-    "--primary-main-btn": "#00458B",
-    "--primary-light": "#005dbb",
-    "--primary-dark": "#013d79",
-
-    "--secondary-main": "#fff44f",
-    "--secondary-light": "#fff44f66",
-    "--secondary-dark": "#766f00",
-
-    "--neutral-main": " #959595",
-    "--netural-light": "#a3a3a3",
-    "--neutral-background-adjacent": "#f5f5f5",
-    "--neutral-dark": "#7a7a7a",
-
-    "--alert-main": "#8b0000",
-    "--alert-light": "#a12b2b",
-    "--alert-dark": "#720000",
-    
-    // Use RGB for dark mode preference detection
-    "--background-color": "rgb(255, 255, 255)",
-    "--text-color": "black",
-};
-
-const darkColors = {
-    "--primary-main": "#ff4f5e",
-    "--primary-main-btn": "#ee4a57",
-    "--primary-light": "#f86975", 
-    "--primary-dark": "#d4424e",
-    
-    "--secondary-main": "#fff44f",
-    "--secondary-light": "#fff44f45",
-    "--secondary-dark": "#fff34e",
-
-    "--neutral-main": "#e7e5e2",
-    "--neutral-dark": "#8d8c8c",
-    "--neutral-background-adjacent": "#313131",
-
-    "--alert-main": "#005e5e",
-    "--alert-light": "#016e6e",
-    "--alert-dark": "#004d4d",
-
-    "--background-color": "#222222",
-    "--text-color": "#e7e5e2",
-};
-
 const modeTransitions = [
     "background-color .5s ease-in",
     "color .5s ease-in",
@@ -97,31 +40,31 @@ const modeTransitions = [
     "stroke .5s ease-in",
 ];
 
-// inconclusive
-// let darkMode = matchMedia("prefers-color-scheme: dark").matches
+let darkMode = document.cookie.match(/theme=dark/i) != null 
+    || window.matchMedia("prefers-color-theme: dark").matches;
 
-function isDarkMode() {
-    const bodyBg = getComputedStyle(document.body, null)
-        .getPropertyValue("background-color")
-    const lightBg = lightColors["--background-color"];
-    
-    return bodyBg !== lightBg;
+setDarkMode(darkMode, false);
+
+function setDarkMode(on, transition=true) {
+    document.cookie = "theme=" + (on ? "dark" : "light");
+
+    if (transition) {
+        // Enable global transitions for the duration of the change
+        const oldTransition = document.body.style.transition;
+        document.body.style.transition = modeTransitions.join(",");
+        setTimeout(() => document.body.style.transition = oldTransition, 510);
+    }
+
+    let classes = ["light-colors", "dark-colors"];
+    if (on) classes = classes.reverse()
+
+    document.body.classList.add(classes[0]);
+    document.body.classList.remove(classes[1]);
 }
-
-let darkMode = isDarkMode();
 
 document
 .getElementById("darkmode-toggle")
 .addEventListener("click", () => {
     darkMode = !darkMode;
-    const newColors = darkMode ? darkColors : lightColors;
-    
-    // Enable global transitions for the duration of the change
-    const oldTransition = document.body.style.transition;
-    document.body.style.transition = modeTransitions.join(",");
-    setTimeout(() => document.body.style.transition = oldTransition, 510);
-
-    for (const k in newColors) {
-        document.body.style.setProperty(k, newColors[k]);
-    }
+    setDarkMode(darkMode);
 });

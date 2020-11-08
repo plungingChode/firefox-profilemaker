@@ -82,7 +82,7 @@
                 describing the feature and the possible problems with it.
                 <p>
                 {% endblocktrans %}
-                <form action="#{{ form.id }}" method="post" class="form">
+                <form action="#start" method="post" class="form">
                     <select id="profile" name="profile">
                         {% for profile in profiles %}
                         <option value="{{ profile.0 }}" {% if profile.0 == active_profile %}selected{% endif %}> {{ profile.1 }}</option>
@@ -119,7 +119,7 @@
             <div id="finish" class="tab-pane fade" style="padding-top: 2ex">
                 <h1>{% trans "Download" %}</h1>
                 {% if not finished %}
-                    <div class="alert" role="alert">
+                    <div class="info" role="alert">
                         {% trans 'You did not finish all questions. You still can download the profile, but there are more options available.' %}
                     </div>
                     <p>
