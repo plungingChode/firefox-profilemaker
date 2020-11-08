@@ -347,13 +347,6 @@ dt {
 }
 
 /* transitions */
-body, input, button, p, .chk, .checkmark, code, a {
-  transition: background-color .5s ease-in, 
-              color .5s ease-in,
-              border-color .5s ease-in;
-}
-
-svg,
-svg *{
-  transition: fill .5s ease-in, stroke .5s ease-in;
+body * {
+  transition: inherit;
 }
