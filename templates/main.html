@@ -99,7 +99,7 @@
                 <h1>{{ form.name }}</h1>
                 <form action="#{{ form.id }}" method="post" class="form">
                     {% csrf_token %}
-                    {{ form.as_p }}
+                    {{ form.as_div }}
                     <button type="submit" class="btn">
                         <svg viewBox="0 0 16 16">
                             <ellipse cx="8" cy="8" rx="4" ry="4" fill="white" stroke="white" stroke-width="1"/>

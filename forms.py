@@ -1,4 +1,6 @@
+from copy import Error
 from django import forms
+from django.forms.forms import Form
 from django.utils.html import conditional_escape
 from django.utils.translation import ugettext as _
 from django.utils.safestring import mark_safe
@@ -25,32 +27,51 @@ from .merge import merge
 class CustomCheckbox(forms.CheckboxInput):
     template_name = "checkbox.html"
 
+class CustomBoolField(forms.BooleanField):
+    widget = CustomCheckbox
+
+    def __init__(self, *, breaks=None, **kwargs):
+        self.breaks = breaks
+        super(CustomBoolField, self).__init__(**kwargs)
+
+class CustomChoiceField(forms.ChoiceField):
+    def __init__(self, *, breaks=None, **kwargs):
+        self.breaks = breaks
+        super(CustomChoiceField, self).__init__(**kwargs)
+
+class CustomCharField(forms.CharField):
+    def __init__(self, *, breaks=None, **kwargs):
+        self.breaks = breaks
+        super(CustomCharField, self).__init__(**kwargs)
+
 class ConfigForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(ConfigForm, self).__init__(*args, **kwargs)
         self.fields['form_name'] = forms.CharField(initial=self.id, widget=forms.widgets.HiddenInput)
         for option in self.options:
             if option['type'] == "boolean":
-                self.fields[option['name']] = forms.BooleanField(
+                self.fields[option['name']] = CustomBoolField(
                     label=option['label'],
                     label_suffix='',
                     help_text=option['help_text'],
-                    widget=CustomCheckbox,
-                    initial=option['initial'], required=False)
+                    initial=option['initial'], required=False,
+                    breaks=option.get('breaks'))
             if option['type'] == "choice":
                 choices = option['choices']
-                self.fields[option['name']] = forms.ChoiceField(
+                self.fields[option['name']] = CustomChoiceField(
                     label=option['label'],
                     label_suffix='',
                     help_text=option['help_text'],
                     choices = list(enumerate(choices)),
-                    initial=option['initial'], required=False)
+                    initial=option['initial'], required=False,
+                    breaks=option.get('breaks'))
             elif option['type'] == "text":
-                self.fields[option['name']] = forms.CharField(
+                self.fields[option['name']] = CustomCharField(
                     label=option['label'],
                     label_suffix='',
                     help_text=option['help_text'],
-                    initial=option['initial'], required=False)
+                    initial=option['initial'], required=False,
+                    breaks=option.get('breaks'))
 
     def _html_output(self, normal_row, error_row, row_ender, help_text_html, errors_on_separate_row):
         "Output HTML. Used by as_table(), as_ul(), as_p()."
@@ -78,12 +99,41 @@ class ConfigForm(forms.Form):
                     
                     # Render labeled stuff inside label, and show
                     # checkbox on right
-                    if field.widget.input_type == "checkbox":
+                    if field.widget.input_type == 'checkbox':
                         label = bf.label_tag(str(bf) + label, { 'class': 'bool' }) or ''
                     else:
                         label = bf.label_tag(label + str(bf)) or ''
                 else:
                     label = ''
+
+                # Render `breaks` warning as list
+                breaks = ''
+                if field.breaks:
+                    callout_local = 'This setting may break:' # TODO localize string
+                    affects_local = 'It affects:' # TODO localize string
+
+                    # TODO maybe replace w/ class field + .html template?
+                    breaks_template = """
+                        <div class="info block">
+                            <h5>%(icon)s %(callout)s %(type)s</h5>
+                            <span class="desc">%(desc)s</span>
+                            <div>%(affects)s
+                                <ul>%(what)s</ul>
+                            </div>
+                        </div>"""
+
+                    what = ''
+                    for b in field.breaks['what']:
+                        what += '<li>%s</li>' % b
+
+                    breaks = breaks_template % { 
+                        'icon': '[ !! ]', # TODO replace w/ actual icon?
+                        'callout': callout_local,
+                        'desc': field.breaks['description'],
+                        'type': field.breaks['type'],
+                        'affects': affects_local,
+                        'what': what 
+                    }
 
                 # Create a 'class="..."' attribute if the row should have any
                 # CSS classes applied.
@@ -100,6 +150,7 @@ class ConfigForm(forms.Form):
                     'errors': bf_errors,
                     'label': '',
                     'field': label if bf.label else bf,
+                    'breaks': breaks,
                     'help_text': help_text,
                     'html_class_attr': html_class_attr,
                     'css_classes': css_classes,
@@ -125,6 +176,7 @@ class ConfigForm(forms.Form):
                         'label': '',
                         'field': '',
                         'help_text': '',
+                        'breaks': '',
                         'html_class_attr': html_class_attr,
                         'css_classes': '',
                         'field_name': '',
@@ -136,6 +188,45 @@ class ConfigForm(forms.Form):
                 # hidden fields.
                 output.append(str_hidden)
         return mark_safe('\n'.join(output))
+
+    def as_p(self):
+        "Cannot render with <p> tags, since the `breaks` list would end the tag"
+        raise Error("Cannot render form as <p>")
+
+    # as_table & as_ul: Same as super's, but include `breaks` field
+    def as_table(self):
+        "Return this form rendered as HTML <tr>s -- excluding the <table></table>."
+        return self._html_output(
+            normal_row='<tr%(html_class_attr)s><th>%(label)s</th><td>%(errors)s%(field)s%(help_text)s%(breaks)s</td></tr>',
+            error_row='<tr><td colspan="2">%s</td></tr>',
+            row_ender='</td></tr>',
+            help_text_html='<br><span class="helptext">%s</span>',
+            errors_on_separate_row=False,
+        )
+
+    def as_ul(self):
+        "Return this form rendered as HTML <li>s -- excluding the <ul></ul>."
+        return self._html_output(
+            normal_row='<li%(html_class_attr)s>%(errors)s%(label)s %(field)s%(help_text)s%(breaks)s</li>',
+            error_row='<li>%s</li>',
+            row_ender='</li>',
+            help_text_html=' <span class="helptext">%s</span>',
+            errors_on_separate_row=False,
+        )
+    
+    def as_div(self):
+        """
+        Return this form rendered as HTML <div>s -- excluding the <div></div>.
+        Currently this is the only fully styled rendering mode.
+        """
+        return self._html_output(
+            normal_row='<div%(html_class_attr)s>%(errors)s%(label)s %(field)s%(help_text)s%(breaks)s</div>',
+            error_row='<div>%s</div>',
+            row_ender="</div>",
+            help_text_html=' <span class="helptext">%s</span>',
+            errors_on_separate_row=False,
+        )
+
 
     def get_config_and_addons(self):
         config = {}

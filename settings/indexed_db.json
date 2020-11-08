@@ -3,11 +3,19 @@
         "name": "indexed_db", 
         "type": "boolean", 
         "initial": false, 
-        "label": "Disable IndexedDB (breaks things)", 
+        "label": "Disable IndexedDB", 
         "help_text": "<a href=\"http://www.w3.org/TR/IndexedDB/\">IndexedDB</a> is a way, websites can store structured data. This can be <a href=\"http://arstechnica.com/apple/2010/09/rldguid-tracking-cookies-in-safari-database-form/\">abused for tracking</a>, too. Disabling causes problems when sites depend on it like Tweetdeck or Reddit and extensions that use it to store their data. Some users reported crashing tabs when IndexedDB is disabled. Only disable it, when you know what you're doing.",
         "addons": [], 
         "config": {
             "dom.indexedDB.enabled": false
-        }
+        },
+        "breaks": {
+            "description": "<a href=\"http://www.w3.org/TR/IndexedDB/\">IndexedDB</a> is needed to store indexed data on your PC. This could for example be a save game or a chatlog. Disabling it will not only prevent websites from storing unique identifiers ('super cookies') but also from storing useful data.",
+            "type": "websites",
+            "what": [
+                "All sites, which require IndexedDB to work",
+                "Locally saving data on sites, like for example save games or chatlogs",
+                "Example: Twitter now requires IndexedDB to work"
+            ]}
     }
 ]
