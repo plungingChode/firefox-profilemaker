@@ -1,11 +1,60 @@
+
 body {
   margin: 15px;
   font-size: 14pt;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+
+  --primary-main: #00458B;
+  --primary-main-btn: #00458B;
+  --primary-light: #005dbb;
+  --primary-dark: #013d79;
+
+  --secondary-main: #fff44f;
+  --secondary-light: #fff44f66;
+  --secondary-dark: #766f00;
+
+  --neutral-main:  #959595;
+  --netural-light: #a3a3a3;
+  --neutral-background-adjacent: #f5f5f5;
+  --neutral-dark: #7a7a7a;
+
+  --alert-main: #8b0000;
+  --alert-light: #a12b2b;
+  --alert-dark: #720000;
+
+  --background-color: white;
+  --text-color: black;
+
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    --primary-main: #ff4f5e;
+    --primary-main-btn: #ee4a57;
+    --primary-light: #f86975; 
+    --primary-dark: #d4424e;
+    
+    --secondary-main: #fff44f;
+    --secondary-light: #fff44f45;
+    --secondary-dark: #fff34e;
+  
+    --neutral-main: #e7e5e2;
+    --neutral-dark: #8d8c8c;
+    --neutral-background-adjacent: #313131;
+
+    --alert-main: #005e5e;
+    --alert-light: #016e6e;
+    --alert-dark: #004d4d;
+  
+    --background-color: #222222;
+    --text-color: #e7e5e2;
+  }
 }
 
 a {
-  color: #005dbb;
+  color: var(--primary-light);
   text-decoration: none;
 }
 
@@ -52,7 +101,7 @@ a:hover {
   display: flex;
   align-items: center;
   justify-content: right;
-  color: #959595;
+  color: var(--neutral-main);
 }
 
 .nav svg {
@@ -61,18 +110,23 @@ a:hover {
 
 .nav line,
 .nav .progress-out {
-  stroke: #959595;
+  fill: var(--background-color);
+  stroke: var(--neutral-main);
 }
 
 .nav .active .progress-out {
-  fill: #959595;
+  fill: var(--neutral-main);
 }
 
 .nav .valid .progress-out,
 .nav .active a[href="#contribute"] .progress-out
 {
-  stroke: #00458B;
-  fill: #00458B;
+  stroke: var(--primary-main);
+  fill: var(--primary-main);
+}
+
+.progress-in {
+  stroke: var(--background-color);
 }
 
 .nav .active a
@@ -81,17 +135,17 @@ a:hover {
 }
 
 .nav .valid a {
-  color: #00458B;
+  color: var(--primary-main);
   font-weight: bold;
 }
 
 .nav .valid line {
-  stroke: #00458B;
+  stroke: var(--primary-main);
 }
 
 .nav .active a[href="#contribute"] {
   font-weight: bold;
-  color: #00458B;
+  color: var(--primary-main);
 }
 /* navbar end */
 
@@ -99,13 +153,13 @@ a:hover {
   font-weight: bold;
   margin-top: 1.2em;
   padding: .7em 1.3em;
-  background-color: #959595;
+  color: white;
+  background-color: var(--neutral-dark);
   border-radius: 3px;
   border-style: none;
   box-shadow: 0 3px 1px -2px rgba(0,0,0,.2),
               0 2px 2px 0 rgba(0,0,0,.14),
               0 1px 5px 0 rgba(0,0,0,.12);
-  color: white;
   display: inline-flex;
   align-items: center;
   justify-content: space-between;
@@ -113,12 +167,12 @@ a:hover {
 }
 
 .btn:hover, .btn:focus {
-  background-color: #a3a3a3;
+  background-color: var(--netural-light);
   text-decoration: none;
 }
 
 .btn:active {
-  background-color: #7a7a7a;
+  background-color: var(--neutral-dark);
 }
 
 .btn svg {
@@ -128,27 +182,27 @@ a:hover {
 }
 
 .btn-primary {
-  background-color: #00458B;
+  background-color: var(--primary-main-btn);
 }
 
 .btn-primary:hover, .btn-primary:focus {
-  background-color: #005dbb;
+  background-color: var(--primary-light);
 }
 
 .btn-primary:active {
-  background-color: #013d79;
+  background-color: var(--primary-dark);
 }
 
 .btn-warning {
-  background-color: #8b0000;
+  background-color: var(--alert-main);
 }
 
 .btn-warning:hover, .btn-warning:focus {
-  background-color: #a12b2b;
+  background-color: var(--alert-light);
 }
 
 .btn-warning:active {
-  background-color: #720000;
+  background-color: var(--alert-dark);
 }
 
 
@@ -177,25 +231,21 @@ form label {
   width: 100%;
 }
 
-.helptext {
-  color: green;
-}
-
 .bool {
   cursor: pointer;
   position: relative;
-  margin-left: 1.5em;
+  margin-left: 1.4em;
 }
 
 .chk {
   position: absolute;
   display: inline-block;
-  border: 2px solid #00458B;
-  height: 1.1em;
-  width: 1.1em;
+  border: 2px solid var(--primary-main);
+  height: .9em;
+  width: .9em;
   border-radius: 3px;
-  margin-left: -1.5em;
-  margin-top: 2px;
+  margin-left: -1.4em;
+  margin-top: 5px;
 }
 
 .chk .checkmark {
@@ -218,12 +268,12 @@ form label {
 }
 
 .chk input:checked ~ .checkmark {
-  background-color: #00458B;
+  background-color: var(--primary-main);
 }
 
 .helptext {
   font-size: 90%;
-  color: #7a7a7a;
+  color: var(--neutral-dark);
 }
 
 form > p {
@@ -232,9 +282,9 @@ form > p {
 
 .alert {
   padding: 15px;
-  color: #766f00;
-  background-color: rgba(255, 244, 79, 0.4);
-  border: 1px solid #fff44f;
+  color: var(--secondary-dark);
+  background-color: var(--secondary-light);
+  border: 1px solid var(--secondary-main);
   border-radius: 5px;
 }
 
@@ -247,20 +297,19 @@ code {
   padding: 4px;
   font-family: Menlo,Monaco,Consolas,"Courier New",monospace;
   border-radius: 4px;
-  color: #013d79;
-  background: #f5f5f5;
+  color: var(--primary-dark);
+  background: var(--neutral-background-adjacent);
 }
 
 pre {
   display: block;
   padding: 9.5px;
-  margin: 0 0 10px;
+  margin: 5px 0 10px;
   line-height: 1.4;
-  color: #013d79;
-  background: #f5f5f5;
+  color: var(--primary-dark);
+  background: var(--neutral-background-adjacent);
   word-break: break-all;
   word-wrap: break-word;
-  border: 1px solid #ccc;
   border-radius: 4px;
   overflow: auto;
   max-height: 20em;
@@ -268,9 +317,43 @@ pre {
 
 select {
   margin-top: 5px;
+  /* background-color: var(--background-color);
+  color: var(--text-color); */
 }
+
+/* input[type="text"] {
+  background-color: var(--background-color);
+  color: var(--text-color);
+} */
 
 dt {
   font-weight: bold;
   margin-top: .5em;
+}
+
+.svg-bgcolor svg {
+  fill: var(--background-color);
+}
+
+#darkmode-toggle {
+  position: fixed;
+  bottom: 10px;
+  cursor: pointer;
+  z-index: 9999;
+}
+
+#darkmode-toggle svg {
+  fill: var(--text-color);
+}
+
+/* transitions */
+body, input, button, p, .chk, .checkmark, code, a {
+  transition: background-color .5s ease-in, 
+              color .5s ease-in,
+              border-color .5s ease-in;
+}
+
+svg,
+svg *{
+  transition: fill .5s ease-in, stroke .5s ease-in;
 }
